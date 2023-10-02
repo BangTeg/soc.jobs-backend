@@ -5,8 +5,9 @@ const { handleError } = require('../utils/errorHandler');
 
 // Function to generate JWT token
 const generateAuthToken = (user) => {
-  const { id, name, email } = user;
-  return jwt.sign({ id, name, email }, process.env.JWT_SECRET, {
+  const { id, name, email, role } = user;
+  console.log(user);
+  return jwt.sign({ id, name, email, role }, process.env.JWT_SECRET, {
     expiresIn: '1d'
   });
 };

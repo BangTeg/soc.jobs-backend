@@ -14,7 +14,12 @@ const verifiedToken = (req, res, next) => {
   try {
     const verified = jwt.verify(tokenValue, process.env.JWT_SECRET);
     console.log('Decoded Token:', verified); // Line for debugging
-    req.user = verified;
+
+    // Include the user's role in the req.user object
+    req.user = {
+      userId: verified.userId, // Assuming userId is part of the token payload
+      role: verified.role,     // Assuming role is part of the token payload
+    };
 
     // Add this line to log the token payload
     console.log('Token Payload:', verified);
