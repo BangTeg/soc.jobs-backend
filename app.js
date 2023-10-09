@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const port = process.env.PORT;
-// const cors = require('cors');
+const cors = require('cors');
 const route = require('./route');
 const session = require('express-session');
 const passport = require('passport');
@@ -19,6 +19,10 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
 app.use("/", route);
 
 // Welcome page
