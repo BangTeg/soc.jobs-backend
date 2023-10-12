@@ -2,11 +2,17 @@ soc.jobs/
 |-- config/
 |   |-- googleOAuth.js
 |   |-- dbconfig.js
+|   |-- multerConfig.js
+|   |-- emailerConfig.js
 |-- controllers/
+|   |-- applicationController.js
 |   |-- authController.js
+|   |-- experienceController.js
 |   |-- googleAuthController.js
-|   |-- userController.js
 |   |-- jobController.js
+|   |-- jobTypeController.js
+|   |-- positionController.js
+|   |-- userController.js
 |-- db/
 |   |-- migrations/
 |   |-- models/
@@ -21,15 +27,27 @@ soc.jobs/
 |-- middleware/
 |   |-- auth.js
 |-- route/
+|   |-- application.route.js
 |   |-- auth.route.js
+|   |-- experience.route.js
 |   |-- index.js
-|   |-- user.route.js
 |   |-- job.route.js
+|   |-- jobType.route.js
+|   |-- position.route.js
+|   |-- user.route.js
 |  src/
 |   |-- avatar/
-|   |-- logo/
 |   |-- cv/
+|   |-- emails/
+|   |   |-- passwordReset.ejs
+|   |   |-- verifyEmail.ejs
+|   |-- logo/
 |-- utils/
+|   |-- crud.js
+|   |-- emailer.js
 |   |-- errorHandler.js
-|-- app.js
 |-- .env
+|-- .sequelizerc
+|-- app.js
+|-- package.json
+|-- README.md

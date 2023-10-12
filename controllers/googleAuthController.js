@@ -3,6 +3,15 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../db/models');
 const { handleError } = require('../utils/errorHandler');
 
+// Function to generate JWT token
+// TODO : move functionto auth middleware
+const generateAuthToken = (user) => {
+  const { id, name, email, role } = user;
+  // console.log(user);
+  return jwt.sign({ id, name, email, role }, process.env.JWT_SECRET, {
+    expiresIn: "1d", // TODO : move to config
+  });
+};
 module.exports = {
 
   // Login with Google
@@ -15,18 +24,19 @@ module.exports = {
   // Endpoint called after successful Google authentication
   googleProtected: async (req, res) => {
     try {
+      console.log(req.user);
       const name = req.user.displayName;
       const email = req.user.emails[0].value; // Corrected email extraction
       const avatar = req.user.photos[0].value; // Corrected avatar extraction
       const gender = req.user.gender; // Add gender extraction
 
       // Find or create the user based on Google profile information
-      const [user, created] = await User.findOrCreate({
+      const [user, isCreated] = await User.findOrCreate({
         where: { email },
         defaults: { name, avatar, gender, role: 'User' }, // Assign the 'User' role
       });
-
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+      console.log(isCreated);
+      const token = generateAuthToken(user);
       return res.redirect(`/auth/google/success/${token}`);
     } catch (error) {
       return handleError(res, error); // Handle errors using the handleError function
@@ -36,7 +46,7 @@ module.exports = {
   // Endpoint called after successful Google authentication
   googleSuccess: (req, res) => {
     res.send({
-      message: 'Login success',
+      message: "Login success",
       token: req.params.token,
     });
   },
@@ -52,7 +62,9 @@ module.exports = {
   },
 
   // Callback route for Google to redirect to after authentication
+  // UNUSED
   googleCallback: (req, res) => {
+    console.log('callback')
     passport.authenticate('google', async (err, user, info) => {
       if (err) {
         console.error(err);
@@ -65,7 +77,7 @@ module.exports = {
 
       // If user is authenticated, generate a JWT token
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: '1d',
+        expiresIn: '1d', // TODO : move to config
       });
 
       // Redirect to a success page with the token

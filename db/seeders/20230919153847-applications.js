@@ -23,13 +23,6 @@ module.exports = {
         status: 'Rejected',
         createdAt: new Date(),
         updatedAt: new Date()
-      },
-      {
-        userId: 4,
-        jobId: 2,
-        status: 'Canceled',
-        createdAt: new Date(),
-        updatedAt: new Date()
       }
     ]);
   },
@@ -38,3 +31,4 @@ module.exports = {
     return queryInterface.bulkDelete('applications', null, {});
   }
 };
+  

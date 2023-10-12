@@ -17,6 +17,13 @@ router.post('/admin-register', authController.adminRegister);
 // Route to logout
 router.post('/logout', authController.logout);
 
+// Route to reset password
+router.post('/reset', authController.resetPassword);
+router.post("/reset/:token", authController.resetPassword);
+
+// Route to verify email
+// router.post("/verify", authController.verifyEmail);
+router.post("/verify/:token", authController.verifyEmail);
 // Google authentication routes
 router.get('/google', googleAuthController.googleLogin);
 router.get('/google/callback', googleAuthController.googleCallback);

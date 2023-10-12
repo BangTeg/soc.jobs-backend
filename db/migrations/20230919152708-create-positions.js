@@ -11,9 +11,15 @@ module.exports = {
       },
       position_name: {
         type: Sequelize.ENUM(
-          'Frontend Developer', 'Backend Developer', 'Fullstack Developer', 'DevOps Engineer',
-          'Copy Writer', 'Content Manager', 'Data Analyst', 'UI/UX Designer', 'Software Engineer', 'Project Manager', 'Business Analyst',
-          'QA Engineer', 'Mobile Developer', 'Other'
+          'Social Media Management',
+          'UI/UX Design',
+          'Branding',
+          'Digital Advertising',
+          'Live Streaming',
+          'Photo & Video',
+          'SEO & SEM',
+          'Web Development',
+          'Other'
           )
       },
       createdAt: {

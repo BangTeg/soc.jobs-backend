@@ -1,12 +1,27 @@
 const { handleError } = require("../utils/errorHandler"); // Import the error handling function
 
+// PAGINATION OPTIONS
+// TODO : move to config
 const defaultPageLimit = 10;
 
+// CRUD operations logics
 const crudController = {
+  // READ operation logics
+
+  // READ multiple rows
   getAll: (model, options = {}) => {
-    const { where = {}, include = [], attributes, paginated = false, raw=false,nest=true } = options;
+    // get option parameters
+    const {
+      where = {},
+      include = [],
+      attributes,
+      paginated = false,
+      raw = false,
+      nest = true,
+    } = options;
     return async (req, res) => {
       try {
+        // Pagination
         let pageOptions = {},
           page,
           limit;
@@ -27,6 +42,7 @@ const crudController = {
           ...pageOptions,
         });
 
+        // Allows data modification with the passed function "f"
         const f =
           options.f ??
           ((req, res, rows) => {
@@ -36,6 +52,8 @@ const crudController = {
             };
           });
         const data = await f(req, res, rows);
+
+        // Handle empty db query result
         if (!data) {
           return res.status(404).json({
             code: 404,
@@ -43,8 +61,10 @@ const crudController = {
             message: `${model.name} not found`,
           });
         }
-        console.log('data')
-        console.log(data)
+        // console.log('data')
+        // console.log(data)
+
+        // Pagination
         if (paginated) {
           const totalPages = Math.ceil(count / limit);
           data.totalPages = totalPages;
@@ -63,13 +83,15 @@ const crudController = {
       }
     };
   },
+  // READ (paginated)
+  // TODO : Remove
   getPaginated: (model, options = {}) => {
     return async (req, res) => {
       options["paginated"] = true;
       return await crudController.getAll(model, options)(req, res);
     };
   },
-
+  // READ one row using primary key
   getById: (model, options = {}, id) => {
     return async (req, res) => {
       id ??= req.params.id;
@@ -81,6 +103,8 @@ const crudController = {
     };
   },
 
+  // CREATE operation logics
+  // TODO : pass validation options
   create: (model, data) => {
     return async (req, res) => {
       data ??= req.body;
@@ -98,8 +122,12 @@ const crudController = {
     };
   },
 
+  // UPDATE operation logics
+  // TODO : pass validation options
+
+  // UPDATE one row using primary key
   update: (model, options = {}, id, data) => {
-    const { include, attributes, raw=false,nest=true } = options;
+    const { include, attributes, raw = false, nest = true } = options;
     return async (req, res) => {
       id ??= req.params.id;
       data ??= req.body;
@@ -115,6 +143,8 @@ const crudController = {
             message: `${model.name} not found, finding ${id}`,
           });
         }
+
+        // Get the updated row
         const row = await model.findByPk(id, {
           include,
           attributes,
@@ -131,6 +161,9 @@ const crudController = {
     };
   },
 
+  // DELETE operation logics
+
+  // DELTE one row using primary key
   delete: (model, id) => {
     return async (req, res) => {
       id ??= req.params.id;

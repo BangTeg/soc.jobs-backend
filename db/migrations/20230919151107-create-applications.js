@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       status: {
-        type: Sequelize.ENUM(['Pending', 'Accepted', 'Rejected', 'Canceled']),
+        type: Sequelize.ENUM(['Pending', 'Accepted', 'Rejected']),
         defaultValue: 'Pending',
       },
       createdAt: {

@@ -9,3 +9,6 @@ package-lock.json
 
 # source files
 src
+
+# vscode Local History extension
+.history

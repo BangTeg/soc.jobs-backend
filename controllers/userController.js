@@ -1,159 +1,74 @@
-const { User, Job } = require('../db/models');
-const bcrypt = require('bcrypt');
-const path = require('path');
-const fs = require('fs');
-const { handleError } = require('../utils/errorHandler'); // Import the error handling function
-const { ValidationError } = require('sequelize');
+const {
+  User,
+  // Job,
+  // Position,
+  // Experience,
+  // Application,
+} = require("../db/models");
+const bcrypt = require("bcrypt");
+const path = require("path");
+const fs = require("fs");
+const { handleError } = require("../utils/errorHandler"); // Import the error handling function
+const { crudController } = require("../utils/crud");
+const applicationController = require("./applicationController");
 
+const attributes = { exclude: ["password"] };
 
 module.exports = {
-  getAllUsers: async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-
-      // Use Sequelize's findAndCountAll for pagination
-      const { count, rows: users } = await User.findAndCountAll({
-        attributes: { exclude: ['password'] },
-        limit,
-        offset: (page - 1) * limit,
-      });
-
-      const totalPages = Math.ceil(count / limit);
-
-      return res.status(200).json({
-        code: 200,
-        status: 'OK',
-        message: 'Success getting paginated users',
-        data: {
-          users,
-          totalUsers: count,
-          totalPages,
-          currentPage: page,
-        },
-      });
-    } catch (err) {
-      if (err instanceof ValidationError) {
-        return res.status(400).json({
-          code: 400,
-          status: 'Bad Request',
-          message: 'Validation Error',
-          errors: err.errors,
+  attributes,
+  getAll: async (req, res) => {
+    return await crudController.getAll(User, {
+      where: {},
+      attributes,
+      paginated: true,
+    })(req, res);
+  },
+  getById: async (req, res) => {
+    const id = req.params.id ?? req.user.id; // Use the ID from the route parameter or token's user Id
+    return await crudController.getById(
+      User,
+      {
+        attributes,
+        // raw: true,
+        // f:(async (req, res, rows) => {
+        //   for (const [key,row] of Object.entries(rows)) {
+        //     row["applications"] = await Application.findAll({
+        //       where: { userId: id },
+        //       include: applicationController.includeJob,
+        //       raw: true,
+        //       nest:true,
+        //       attributes: applicationController.attributes,
+        //     });
+        //   }
+        //   console.log(rows[0])
+        //   return rows;
+        // }),
+      },
+      id
+    )(req, res);
+  },
+  update: async (req, res) => {
+    const id = req.params.id ?? req.user.id; // Use the ID from the route parameter or token's user Id
+    // const id = req.params.id; // Use the ID from the route parameter
+    if (req.user.role !== "Admin")
+      if (id != req.user.id) {
+        return res.status(403).json({
+          code: 403,
+          status: "Forbidden",
+          message: "You do not have permission to edit other's profile.",
         });
       }
-      return handleError(res, err);
+    const data = req.body;
+    if (data.password) {
+      const salt = await bcrypt.genSalt();
+      data.password = await bcrypt.hash(data.password, salt);
     }
-  },
-
-  getProfile: async (req, res) => {
-    try {
-      const profile = await User.findOne({
-        where: { id: req.user.id },
-        attributes: { exclude: ['password'] },
-        include: {
-          model: Job,
-          as: 'appliedJob',
-          attributes: ['title', 'job_desc', 'logo', 'createdAt'],
-          through: {
-            attributes: ['status'],
-          },
-        },
-      });
-
-      return res.status(200).json({
-        code: 200,
-        status: 'OK',
-        message: 'Success get profile',
-        data: {
-          profile,
-        },
-      });
-    } catch (err) {
-      return handleError(res, err);
-    }
-  },
-
-  getProfileById: async (req, res) => {
-    const { id } = req.params;
-
-    try {
-      const profile = await User.findOne({
-        where: { id },
-        attributes: { exclude: ['password'] },
-        include: {
-          model: Job,
-          as: 'appliedJob',
-          attributes: ['title', 'job_desc', 'logo', 'createdAt'],
-          through: {
-            attributes: ['status'],
-          },
-        },
-      });
-
-      if (!profile) {
-        return res.status(404).json({
-          code: 404,
-          status: 'Not Found',
-          message: 'User not found',
-        });
-      }
-
-      return res.status(200).json({
-        code: 200,
-        status: 'OK',
-        message: 'Success get profile',
-        data: {
-          profile,
-        },
-      });
-    } catch (err) {
-      return handleError(res, err);
-    }
-  },
-
-  updateProfile: async (req, res) => {
-    const { id } = req.params; // Use the ID from the route parameter
-    const { name, email, password, gender, address, contact } = req.body;
-
-    try {
-      const user = await User.findByPk(id);
-
-      if (!user) {
-        return res.status(404).json({
-          code: 404,
-          status: 'Not Found',
-          message: 'User not found',
-        });
-      }
-
-      // Update user data
-      user.name = name;
-      user.email = email;
-      user.gender = gender;
-      user.address = address;
-      user.contact = contact;
-
-      // Update user password if provided
-      if (password) {
-        const salt = await bcrypt.genSalt();
-        user.password = await bcrypt.hash(password, salt);
-      }
-
-      // Check if a CV file was uploaded
-      if (req.file) {
-        user.cv = req.file.filename; // Store the CV filename in the 'cv' field
-      }
-
-      await user.save();
-
-      return res.status(200).json({
-        code: 200,
-        status: 'OK',
-        message: 'Success update profile',
-      });
-    } catch (err) {
-      return handleError(res, err);
-    }
+    return await crudController.update(
+      User,
+      { attributes },
+      id,
+      data
+    )(req, res);
   },
 
   // Updated uploadAvatar function with Multer middleware
@@ -163,8 +78,8 @@ module.exports = {
       if (!req.file) {
         return res.status(400).json({
           code: 400,
-          status: 'Bad Request',
-          message: 'No file uploaded.',
+          status: "Bad Request",
+          message: "No file uploaded.",
         });
       }
 
@@ -175,8 +90,8 @@ module.exports = {
       if (!user) {
         return res.status(404).json({
           code: 404,
-          status: 'Not Found',
-          message: 'User not found',
+          status: "Not Found",
+          message: "User not found",
         });
       }
 
@@ -191,8 +106,8 @@ module.exports = {
 
       return res.status(200).json({
         code: 200,
-        status: 'OK',
-        message: 'Profile picture uploaded successfully.',
+        status: "OK",
+        message: "Profile picture uploaded successfully.",
         avatarPath: user.avatar,
       });
     } catch (err) {
@@ -207,8 +122,8 @@ module.exports = {
       if (!req.file) {
         return res.status(400).json({
           code: 400,
-          status: 'Bad Request',
-          message: 'No file uploaded.',
+          status: "Bad Request",
+          message: "No file uploaded.",
         });
       }
 
@@ -219,8 +134,8 @@ module.exports = {
       if (!user) {
         return res.status(404).json({
           code: 404,
-          status: 'Not Found',
-          message: 'User not found',
+          status: "Not Found",
+          message: "User not found",
         });
       }
 
@@ -235,12 +150,40 @@ module.exports = {
 
       return res.status(200).json({
         code: 200,
-        status: 'OK',
-        message: 'CV uploaded successfully.',
+        status: "OK",
+        message: "CV uploaded successfully.",
         cvPath: user.cv,
       });
     } catch (err) {
       return handleError(res, err);
     }
   },
+
+  // getProfile: async (req, res) => {
+  //   try {
+  //     const profile = await User.findOne({
+  //       where: { id: req.user.id },
+  //       attributes: { exclude: ['password'] },
+  //       // include: {
+  //       //   model: Job,
+  //       //   as: 'appliedJob',
+  //       //   attributes: ['title', 'job_desc', 'logo', 'createdAt'],
+  //       //   through: {
+  //       //     attributes: ['status'],
+  //       //   },
+  //       // },
+  //     });
+
+  //     return res.status(200).json({
+  //       code: 200,
+  //       status: 'OK',
+  //       message: 'Success get profile',
+  //       data: {
+  //         profile,
+  //       },
+  //     });
+  //   } catch (err) {
+  //     return handleError(res, err);
+  //   }
+  // },
 };

@@ -4,67 +4,42 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     return queryInterface.bulkInsert('positions', [
       {
-        position_name: 'Frontend Developer',
+        position_name: 'Social Media Management',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        position_name: 'Backend Developer',
+        position_name: 'UI/UX Design',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        position_name: 'Fullstack Developer',
+        position_name: 'Branding',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        position_name: 'DevOps Engineer',
+        position_name: 'Digital Advertising',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        position_name: 'Copy Writer',
+        position_name: 'Live Streaming',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        position_name: 'Content Manager',
+        position_name: 'Photo & Video',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        position_name: 'Data Analyst',
+        position_name: 'SEO & SEM',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        position_name: 'UI/UX Designer',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        position_name: 'Software Engineer',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        position_name: 'Project Manager',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        position_name: 'Business Analyst',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        position_name: 'QA Engineer',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        position_name: 'Mobile Developer',
+        position_name: 'Web Development',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -73,7 +48,6 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       }
-      // Add more position data
     ]);
   },
 
