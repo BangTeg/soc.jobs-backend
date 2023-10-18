@@ -12,7 +12,7 @@ const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 passport.use(new GoogleStrategy({
   clientID: GOOGLE_CLIENT_ID,
   clientSecret: GOOGLE_CLIENT_SECRET,
-  callbackURL: 'http://localhost:4000/auth/google/', // This will be the route that Google will redirect to after authentication
+  callbackURL: 'https://50cglb1j-4000.asse.devtunnels.ms/auth/google/', // This will be the route that Google will redirect to after authentication
   passReqToCallback: true
 },
 (request, accessToken, refreshToken, profile, done) => {

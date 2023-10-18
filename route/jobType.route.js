@@ -6,8 +6,8 @@ const { adminToken } = require("../middleware/auth");
 // Route to get all jobType listed
 router.get("/", jobTypeController.getAll);
 
-// // Route to get an jobType by ID
-// router.get("/:id", jobTypeController.getById);
+// Route to get an jobType by ID
+router.get("/:id", jobTypeController.getById);
 
 // // Route to create a new jobType
 // router.post("/", adminToken, jobTypeController.create);

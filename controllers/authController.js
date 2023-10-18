@@ -1,3 +1,8 @@
+require("dotenv").config();
+
+const {
+  FE_PORT
+} = process.env;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../db/models");
@@ -49,7 +54,8 @@ const getResetEmailText = (hostUrl, token, data) => {
 // Send the emails using emailer module
 const sendVerifyEmail = async (req, res, userData) => {
   const { email } = req.body;
-  const hostUrl = `${req.protocol}://${req.get("host")}`;
+  // const hostUrl = `${req.protocol}://${req.get("host")}`;
+  const hostUrl = FE_PORT;
   return await sendAuthEmail(
     req,
     res,

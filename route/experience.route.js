@@ -6,8 +6,8 @@ const { adminToken } = require("../middleware/auth");
 // Route to get all experience listed
 router.get("/", experienceController.getAll);
 
-// // Route to get an experience by ID
-// router.get("/:id", experienceController.getById);
+// Route to get an experience by ID
+router.get("/:id", experienceController.getById);
 
 // // Route to create a new experience
 // router.post("/", adminToken, experienceController.create);

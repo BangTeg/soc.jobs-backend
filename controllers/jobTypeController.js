@@ -9,7 +9,7 @@ module.exports = {
       attributes: { exclude: ["createdAt", "updatedAt"] },
     })(req, res);
   },
-  // getById: crudController.getById(Type),
+  getById: crudController.getById(Type),
   // create: crudController.create(Type),
   // update: crudController.update(Type),
   // delete: crudController.delete(Type),

@@ -6,8 +6,8 @@ const { adminToken } = require("../middleware/auth");
 // Route to get all position listed
 router.get("/", positionController.getAll);
 
-// // Route to get an position by ID
-// router.get("/:id", positionController.getById);
+// Route to get an position by ID
+router.get("/:id", positionController.getById);
 
 // // Route to create a new position
 // router.post("/", adminToken, positionController.create);

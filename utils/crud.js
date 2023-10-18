@@ -163,7 +163,7 @@ const crudController = {
 
   // DELETE operation logics
 
-  // DELTE one row using primary key
+  // DELETE one row using primary key
   delete: (model, id) => {
     return async (req, res) => {
       id ??= req.params.id;
