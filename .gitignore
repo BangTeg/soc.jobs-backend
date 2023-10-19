@@ -8,7 +8,7 @@ package-lock.json
 .env
 
 # source files
-# src
+src
 
 # vscode Local History extension
 .history

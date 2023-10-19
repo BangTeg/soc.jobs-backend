@@ -47,6 +47,34 @@ module.exports = {
       id
     )(req, res);
   },
+
+  getByToken: async (req, res) => {
+    const { user } = req;
+
+    try {
+      const userData = await User.findByPk(user.id, {
+        attributes,
+      });
+
+      if (!userData) {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User not found",
+        });
+      }
+
+      return res.status(200).json({
+        code: 200,
+        status: "OK",
+        message: "User information retrieved successfully.",
+        data: userData,
+      });
+    } catch (err) {
+      return handleError(res, err);
+    }
+  },
+  
   update: async (req, res) => {
     const id = req.params.id ?? req.user.id; // Use the ID from the route parameter or token's user Id
     // const id = req.params.id; // Use the ID from the route parameter
