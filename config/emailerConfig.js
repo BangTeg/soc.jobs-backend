@@ -26,6 +26,7 @@ const mailOptions = {
 // Export the configuration for the emailer, including constants, SMTP settings, and email options.
 module.exports = {
   expiresIn,
+  
   resendCooldown,
   cleanInterval,
   SMTP_HOST,
