@@ -3,18 +3,18 @@ const { crudController } = require("../utils/crud");
 const userController = require("./userController");
 const jobController = require("./jobController");
 
-const attributes = ["status", "updatedAt"];
+const attributes = ["status", "updatedAt"]; // Adjusted the attributes
+
 const includeUser = {
   model: User,
   as: "User",
   attributes: ["name"],
-  // attributes: userController.attributes,
 };
+
 const includeJob = {
   model: Job,
   as: "Job",
   attributes: ["title"],
-  // include:jobController.include
   include: [
     {
       model: Position,
@@ -28,6 +28,7 @@ const includeJob = {
     },
   ],
 };
+
 const include = [includeUser, includeJob];
 
 module.exports = {
@@ -39,9 +40,10 @@ module.exports = {
       where: {},
       include,
       paginated: true,
+      attributes, // Added attributes option to include only specific attributes
     })(req, res);
   },
-  getById: crudController.getById(Application, { include }),
+  getById: crudController.getById(Application, { include, attributes }),
   getByUserId: async (req, res) => {
     const { id } = req.params;
     return await crudController.getAll(Application, {
@@ -69,14 +71,12 @@ module.exports = {
       // verify if job closed
       const close = new Date(closedAt).getTime();
       const now = new Date().getTime();
-      // console.log(`closed ${close}, now ${now}`);
-      // if closed
       if (now >= close) {
         return res.status(400).json({
           message: `Job is closed`,
         });
       }
-      // verify if quota availible
+      // verify if quota available
       if (applicant >= quota) {
         return res.status(400).json({
           message: `Job is full`,
@@ -87,6 +87,6 @@ module.exports = {
     console.log(ret);
     return ret;
   },
-  update: crudController.update(Application, { include }), // TODO : validation
+  update: crudController.update(Application, { include, attributes }), // TODO : validation
   delete: crudController.delete(Application),
 };
