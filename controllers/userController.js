@@ -99,6 +99,47 @@ module.exports = {
     )(req, res);
   },
 
+  // Get a user's avatar by token
+  getAvatar: async (req, res) => {
+    try {
+      const { id } = req.user;
+      // Find the user by ID
+      const user = await User.findByPk(id, { attributes: ["avatar"] });
+
+      if (!user) {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User not found",
+        });
+      }
+
+      if (!user.avatar) {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User's avatar not found",
+        });
+      }
+
+      const avatarPath = path.join(__dirname, `../src/avatar/${user.avatar}`);
+
+      // Check if the avatar file exists
+      if (fs.existsSync(avatarPath)) {
+        // Send the avatar file as a response
+        res.sendFile(avatarPath);
+      } else {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User's avatar not found",
+        });
+      }
+    } catch (err) {
+      return handleError(res, err);
+    }
+  },
+
   // Updated uploadAvatar function with Multer middleware
   uploadAvatar: async (req, res) => {
     try {
@@ -138,6 +179,47 @@ module.exports = {
         message: "Profile picture uploaded successfully.",
         avatarPath: user.avatar,
       });
+    } catch (err) {
+      return handleError(res, err);
+    }
+  },
+
+  // Get a user's CV by token
+  getCV: async (req, res) => {
+    try {
+      const { id } = req.user;
+      // Find the user by ID
+      const user = await User.findByPk(id, { attributes: ["cv"] });
+
+      if (!user) {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User not found",
+        });
+      }
+
+      if (!user.cv) {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User's CV not found",
+        });
+      }
+
+      const cvPath = path.join(__dirname, `../src/cv/${user.cv}`);
+
+      // Check if the CV file exists
+      if (fs.existsSync(cvPath)) {
+        // Send the CV file as a response
+        res.sendFile(cvPath);
+      } else {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User's CV not found",
+        });
+      }
     } catch (err) {
       return handleError(res, err);
     }

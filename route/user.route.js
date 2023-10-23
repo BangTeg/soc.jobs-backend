@@ -19,8 +19,14 @@ router.get("/application/:id", adminToken, applicationController.getByUserId);
 // // Route to get applications
 router.get("/application/", applicationController.getByUserId);
 
-// Routes for file uploads
+// Routes for uploading avatar
 router.post('/avatar', uploadAvatar.single('avatar'), userController.uploadAvatar);
+// Route to get a user's avatar by token
+router.get('/avatar', verifiedToken, userController.getAvatar);
+
+// Routes for uploading CV
 router.post('/cv', uploadCV.single('cv'), userController.uploadCV);
+// Route to get a user's CV by token
+router.get('/cv', verifiedToken, userController.getCV);
 
 module.exports = router;
