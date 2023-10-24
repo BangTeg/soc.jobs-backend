@@ -8,13 +8,13 @@ const attributes = ["status", "updatedAt"]; // Adjusted the attributes
 const includeUser = {
   model: User,
   as: "User",
-  attributes: ["name"],
+  attributes: ["id", "name"],
 };
 
 const includeJob = {
   model: Job,
   as: "Job",
-  attributes: ["title"],
+  attributes: ["id", "title"],
   include: [
     {
       model: Position,
