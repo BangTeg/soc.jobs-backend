@@ -67,7 +67,8 @@ const sendVerifyEmail = async (req, res, userData) => {
   );
 };
 const sendResetEmail = async (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get("host")}`;
+  // const hostUrl = `${req.protocol}://${req.get("host")}`;
+  const hostUrl = FE_PORT;
   const { email } = req.body;
   const user = await User.findOne({
     where: { email },
