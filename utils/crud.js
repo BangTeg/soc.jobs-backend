@@ -44,8 +44,19 @@ const crudController = {
           ...pageOptions,
         });
 
-        const data = rows;
+        // Allows data modification with the passed function "f"
+        const f =
+        options.f ??
+        ((req, res, rows) => {
+          return {
+            rows,
+            totalRows: count,
+          };
+        });
+        const data = await f(req, res, rows);
 
+        // const data = rows;
+        
         // Handle empty db query result
         if (!data) {
           const ret = {
