@@ -56,7 +56,7 @@ const crudController = {
         const data = await f(req, res, rows);
 
         // const data = rows;
-        
+
         // Handle empty db query result
         if (!data) {
           const ret = {
@@ -103,8 +103,11 @@ const crudController = {
   getById: (model, options = {}, _id) => {
     return async (req, res) => {
       id = _id ?? req.params.id;
-      console.log(req.params);
+      // console.log(req.params);
       options.where = { id };
+      options.f ??= (req, res, data) => data;
+      const ff = options.f;
+      options.f = async (req, res, data) => (await ff(req, res, data))?.[0];
       return await crudController.getAll(model, options)(req, res);
     };
   },
