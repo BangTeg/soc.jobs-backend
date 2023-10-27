@@ -162,6 +162,7 @@ cleanExpired(); // start cleanExpired interval loop
 
 // Module Exports
 module.exports = {
+  sendEmail,
   sendAuthEmail,
   verifyAndInvalidateLatestToken,
 };

@@ -17,6 +17,7 @@ const fs = require("fs");
 const ejs = require("ejs");
 
 // Function to generate JWT token
+// TODO : move functionto auth middleware
 const generateAuthToken = (user) => {
   const { id, name, email, role } = user;
   // console.log(user);

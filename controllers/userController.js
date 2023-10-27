@@ -29,20 +29,6 @@ module.exports = {
       User,
       {
         attributes,
-        // raw: true,
-        // f:(async (req, res, rows) => {
-        //   for (const [key,row] of Object.entries(rows)) {
-        //     row["applications"] = await Application.findAll({
-        //       where: { userId: id },
-        //       include: applicationController.includeJob,
-        //       raw: true,
-        //       nest:true,
-        //       attributes: applicationController.attributes,
-        //     });
-        //   }
-        //   console.log(rows[0])
-        //   return rows;
-        // }),
       },
       id
     )(req, res);

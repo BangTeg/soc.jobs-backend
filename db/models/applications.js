@@ -17,6 +17,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Application.init({
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
     userId: DataTypes.INTEGER,
     jobId: DataTypes.INTEGER,
     status: DataTypes.ENUM([
