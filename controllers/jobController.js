@@ -1,6 +1,6 @@
 const { Job, Experience, Position, Type } = require("../db/models");
 const { crudController } = require("../utils/crud");
-const { Op } = require("sequelize");
+// const { Op } = require("sequelize");
 
 const defaultPageLimit = 10; // Define default page limit
 

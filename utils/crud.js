@@ -56,7 +56,7 @@ const crudController = {
         const data = await f(req, res, rows);
 
         // const data = rows;
-
+        
         // Handle empty db query result
         if (!data) {
           const ret = {
@@ -99,18 +99,43 @@ const crudController = {
       return await crudController.getAll(model, options)(req, res);
     };
   },
-  // READ one row using primary key
+  
   getById: (model, options = {}, _id) => {
     return async (req, res) => {
-      id = _id ?? req.params.id;
-      // console.log(req.params);
-      options.where = { id };
-      options.f ??= (req, res, data) => data;
-      const ff = options.f;
-      options.f = async (req, res, data) => (await ff(req, res, data))?.[0];
-      return await crudController.getAll(model, options)(req, res);
+      const id = _id ?? req.params.id;
+      try {
+        const row = await model.findByPk(id, {
+          where: options.where || {},
+          include: options.include || [],
+          attributes: options.attributes || undefined,
+          raw: options.raw || true,
+          nest: options.nest || true,
+        });
+  
+        if (!row) {
+          const ret = {
+            code: 404,
+            status: "Not Found",
+            message: `${model.name} not found`,
+          };
+          if (options.send !== false) res.status(404).json(ret);
+          return ret;
+        }
+  
+        const ret = {
+          code: 200,
+          status: "OK",
+          message: `Success getting ${model.name}`,
+          data: row,
+        };
+  
+        if (options.send !== false) res.status(200).json(ret);
+        return ret;
+      } catch (err) {
+        return handleError(res, err);
+      }
     };
-  },
+  },  
 
   // CREATE operation logics
   // TODO : pass validation options

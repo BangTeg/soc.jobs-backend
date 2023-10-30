@@ -39,6 +39,7 @@ soc.jobs/
 |   |-- avatar/
 |   |-- cv/
 |   |-- emails/
+|   |   |-- email.ejs
 |   |   |-- passwordReset.ejs
 |   |   |-- verifyEmail.ejs
 |   |-- logo/
