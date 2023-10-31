@@ -132,7 +132,7 @@ module.exports = {
           status: "OK",
           message: "No applications found within the specified date range.",
           data: {
-            applications: [],
+            rows: [],
           },
         });
       }
@@ -172,7 +172,7 @@ module.exports = {
           status: "OK",
           message: "No applications found for the user's token.",
           data: {
-            applications: [],
+            rows: [],
           },
         });
       }
@@ -182,7 +182,8 @@ module.exports = {
         status: "OK",
         message: "Applications retrieved successfully for the user's token.",
         data: {
-          applications: applications,
+          rows: applications,
+          totalRows: applications.length,
         },
       });
     } catch (err) {

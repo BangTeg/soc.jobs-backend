@@ -67,8 +67,10 @@ module.exports = {
         status: "OK",
         message: "Success getting filtered jobs",
         data: {
-          jobs: rows,
-          totalJobs: count,
+          rows: rows,
+          totalRows: count,
+          totalPages: Math.ceil(count / limit),
+          currentPage: page,
         },
       });
     } catch (err) {
@@ -132,7 +134,7 @@ module.exports = {
           status: "OK",
           message: "No jobs found within the specified date range.",
           data: {
-            jobs: [],
+            rows: [],
           },
         });
       }
