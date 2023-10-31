@@ -9,6 +9,7 @@ const { mailOptions } = require("../config/emailerConfig");
 const { sendEmail } = require("../utils/emailer");
 const { Op } = require("sequelize");
 
+const defaultPageLimit = 10; // Define default page limit
 
 const attributes = ["status", "updatedAt"];
 const includeUser = {
@@ -81,7 +82,7 @@ module.exports = {
 
   getApplicationsByDateRange: async (req, res) => {
     try {
-      const { startDate, endDate } = req.query;
+      const { startDate, endDate, page, limit } = req.query;
   
       // Validate startDate and endDate
       if (!startDate || !endDate) {
@@ -105,23 +106,33 @@ module.exports = {
         });
       }
   
-      // Fetch applications based on the date range
-      const applications = await Application.findAll({
+      // Calculate limit and offset for pagination
+      const parsedLimit = parseInt(limit) || defaultPageLimit;
+      const parsedPage = parseInt(page) || 1;
+      const offset = (parsedPage - 1) * parsedLimit;
+  
+      // Fetch applications based on the date range with pagination
+      const applications = await Application.findAndCountAll({
         where: {
           createdAt: {
             [Op.between]: [startDate, endDate],
           },
         },
-        include: include, // Include User and Job models as needed
+        include, // Include User and Job models as needed
+        limit: parsedLimit,
+        offset,
       });
   
-      if (applications.length === 0) {
+      const totalRows = applications.count;
+      const applicationList = applications.rows;
+  
+      if (applicationList.length === 0) {
         return res.status(200).json({
           code: 200,
           status: "OK",
           message: "No applications found within the specified date range.",
           data: {
-            applications: [], // Return an empty array to indicate no matching applications
+            applications: [],
           },
         });
       }
@@ -129,15 +140,19 @@ module.exports = {
       return res.status(200).json({
         code: 200,
         status: "OK",
-        message: "Success getting applications within the date range",
+        message: "Success getting applications within the date range with pagination",
         data: {
-          applications,
+          rows: applicationList,
+          totalRows,
+          totalPages: Math.ceil(totalRows / parsedLimit),
+          currentPage: parsedPage,
         },
       });
     } catch (err) {
       return handleError(res, err);
     }
-  },  
+  },
+    
 
   create: async (req, res) => {
     const data = req.body;

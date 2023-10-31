@@ -77,9 +77,8 @@ module.exports = {
   },
 
   getJobsByDateRange: async (req, res) => {
-    // console.log("getJobsByDateRange function is called.");
     try {
-      const { startDate, endDate } = req.query;
+      const { startDate, endDate, page, limit } = req.query;
   
       // Validate startDate and endDate
       if (!startDate || !endDate) {
@@ -107,23 +106,33 @@ module.exports = {
       const formattedStartDate = startDate + ' 00:00:00';
       const formattedEndDate = endDate + ' 23:59:59';
   
-      // Fetch jobs based on the date range
-      const jobs = await Job.findAll({
+      // Calculate limit and offset for pagination
+      const parsedLimit = parseInt(limit) || defaultPageLimit;
+      const parsedPage = parseInt(page) || 1;
+      const offset = (parsedPage - 1) * parsedLimit;
+  
+      // Fetch jobs based on the date range with pagination
+      const jobs = await Job.findAndCountAll({
         where: {
           createdAt: {
             [Op.between]: [formattedStartDate, formattedEndDate],
           },
         },
         include,
+        limit: parsedLimit,
+        offset,
       });
   
-      if (jobs.length === 0) {
+      const totalRows = jobs.count;
+      const jobList = jobs.rows;
+  
+      if (jobList.length === 0) {
         return res.status(200).json({
           code: 200,
           status: "OK",
           message: "No jobs found within the specified date range.",
           data: {
-            jobs: [], // Return an empty array to indicate no matching jobs
+            jobs: [],
           },
         });
       }
@@ -131,9 +140,12 @@ module.exports = {
       return res.status(200).json({
         code: 200,
         status: "OK",
-        message: "Success getting jobs within the date range",
+        message: "Success getting jobs within the date range with pagination",
         data: {
-          jobs,
+          rows: jobList,
+          totalRows,
+          totalPages: Math.ceil(totalRows / parsedLimit),
+          currentPage: parsedPage,
         },
       });
     } catch (err) {
