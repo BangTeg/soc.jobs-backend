@@ -14,9 +14,11 @@ router.get('/profile/:id', userController.getById);
 // router.put("/profile", userController.updateProfile);
 router.put("/profile/:id", userController.update);
 
+// Route to get applications by the user's token
+router.get("/applications/token", verifiedToken, applicationController.getApplicationsByUserToken);
 // Route to get applications by UserID
 router.get("/application/:id", adminToken, applicationController.getByUserId);
-// // Route to get applications
+// Route to get applications
 router.get("/application/", applicationController.getByUserId);
 
 // Routes for uploading avatar

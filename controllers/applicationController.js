@@ -153,6 +153,42 @@ module.exports = {
     }
   },
     
+  // Get applications by user's token
+  getApplicationsByUserToken: async (req, res) => {
+    try {
+      const userId = req.user.id; // Get the user's ID from the token
+
+      // Query the applications where userId matches the user's ID
+      const applications = await Application.findAll({
+        where: {
+          userId: userId,
+        },
+        include: include, // Include User and Job models as needed
+      });
+
+      if (applications.length === 0) {
+        return res.status(200).json({
+          code: 200,
+          status: "OK",
+          message: "No applications found for the user's token.",
+          data: {
+            applications: [],
+          },
+        });
+      }
+
+      return res.status(200).json({
+        code: 200,
+        status: "OK",
+        message: "Applications retrieved successfully for the user's token.",
+        data: {
+          applications: applications,
+        },
+      });
+    } catch (err) {
+      return handleError(res, err);
+    }
+  },
 
   create: async (req, res) => {
     const data = req.body;
