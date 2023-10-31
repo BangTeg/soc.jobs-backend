@@ -18,4 +18,7 @@ router.put("/:id", adminToken, applicationController.update);
 // Route to delete an application by ID
 router.delete("/:id", adminToken, applicationController.delete);
 
+// Route to get applications by createdAt date range
+router.get("/filter/date-range", adminToken, applicationController.getApplicationsByDateRange);
+
 module.exports = router;

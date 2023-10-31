@@ -22,6 +22,9 @@ router.put("/:id", adminToken, jobController.update);
 // Route to delete a job by ID
 router.delete("/:id", adminToken, jobController.delete);
 
+// Route to get jobs within a date range
+router.get("/filter/date-range", adminToken, jobController.getJobsByDateRange);
+
 // Route to get applications by JobID
 router.get("/application/:id", adminToken, applicationController.getByJobId);
 

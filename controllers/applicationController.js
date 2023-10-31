@@ -1,11 +1,13 @@
 const { Application, Job, User, Position, Experience, Type } = require("../db/models");
 const { crudController } = require("../utils/crud");
+const { handleError } = require("../utils/errorHandler");
 const userController = require("./userController");
 const jobController = require("./jobController");
 const fs = require("fs");
 const ejs = require("ejs");
-const {mailOptions} = require("../config/emailerConfig");
+const { mailOptions } = require("../config/emailerConfig");
 const { sendEmail } = require("../utils/emailer");
+const { Op } = require("sequelize");
 
 
 const attributes = ["status", "updatedAt"];
@@ -56,7 +58,9 @@ module.exports = {
       paginated: true,
     })(req, res);
   },
+
   getById: crudController.getById(Application, { include }),
+
   getByUserId: async (req, res) => {
     const { id } = req.params;
     return await crudController.getAll(Application, {
@@ -65,6 +69,7 @@ module.exports = {
       attributes,
     })(req, res);
   },
+
   getByJobId: async (req, res) => {
     const { id } = req.params;
     return await crudController.getAll(Application, {
@@ -73,6 +78,67 @@ module.exports = {
       attributes,
     })(req, res);
   },
+
+  getApplicationsByDateRange: async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+  
+      // Validate startDate and endDate
+      if (!startDate || !endDate) {
+        return res.status(400).json({
+          code: 400,
+          status: "Bad Request",
+          message: "Please provide valid startDate and endDate parameters.",
+        });
+      }
+  
+      // Parse the start and end dates as Date objects
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(endDate);
+  
+      // Check if startDate is after endDate or the same day
+      if (startDateObj > endDateObj) {
+        return res.status(400).json({
+          code: 400,
+          status: "Bad Request",
+          message: "Start date cannot be chronologically after or the same as the end date.",
+        });
+      }
+  
+      // Fetch applications based on the date range
+      const applications = await Application.findAll({
+        where: {
+          createdAt: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
+        include: include, // Include User and Job models as needed
+      });
+  
+      if (applications.length === 0) {
+        return res.status(200).json({
+          code: 200,
+          status: "OK",
+          message: "No applications found within the specified date range.",
+          data: {
+            applications: [], // Return an empty array to indicate no matching applications
+          },
+        });
+      }
+  
+      return res.status(200).json({
+        code: 200,
+        status: "OK",
+        message: "Success getting applications within the date range",
+        data: {
+          applications,
+        },
+      });
+    } catch (err) {
+      return handleError(res, err);
+    }
+  },  
+
   create: async (req, res) => {
     const data = req.body;
     // TODO : validation
@@ -101,6 +167,7 @@ module.exports = {
     const ret = await crudController.create(Application, data)(req, res);
     return ret;
   },
+
   update: async (req, res) => {
     const ret = await crudController.update(Application, { include , send:false})(req,res) // TODO : validation
     ret["emailStatus"] = 'not sent';
@@ -142,7 +209,6 @@ module.exports = {
     }
     return res.status(ret.code).json(ret);
   },
-  
   
   delete: crudController.delete(Application),
 };

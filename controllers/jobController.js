@@ -1,6 +1,7 @@
 const { Job, Experience, Position, Type } = require("../db/models");
 const { crudController } = require("../utils/crud");
-// const { Op } = require("sequelize");
+const { handleError } = require("../utils/errorHandler");
+const { Op } = require("sequelize");
 
 const defaultPageLimit = 10; // Define default page limit
 
@@ -74,6 +75,71 @@ module.exports = {
       return handleError(res, err);
     }
   },
+
+  getJobsByDateRange: async (req, res) => {
+    // console.log("getJobsByDateRange function is called.");
+    try {
+      const { startDate, endDate } = req.query;
+  
+      // Validate startDate and endDate
+      if (!startDate || !endDate) {
+        return res.status(400).json({
+          code: 400,
+          status: "Bad Request",
+          message: "Please provide valid startDate and endDate parameters.",
+        });
+      }
+  
+      // Parse the start and end dates as Date objects
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(endDate);
+  
+      // Check if startDate is after endDate or the same day
+      if (startDateObj > endDateObj) {
+        return res.status(400).json({
+          code: 400,
+          status: "Bad Request",
+          message: "Start date cannot be chronologically after or the same as the end date.",
+        });
+      }
+  
+      // Adjust startDate and endDate to match the database date format
+      const formattedStartDate = startDate + ' 00:00:00';
+      const formattedEndDate = endDate + ' 23:59:59';
+  
+      // Fetch jobs based on the date range
+      const jobs = await Job.findAll({
+        where: {
+          createdAt: {
+            [Op.between]: [formattedStartDate, formattedEndDate],
+          },
+        },
+        include,
+      });
+  
+      if (jobs.length === 0) {
+        return res.status(200).json({
+          code: 200,
+          status: "OK",
+          message: "No jobs found within the specified date range.",
+          data: {
+            jobs: [], // Return an empty array to indicate no matching jobs
+          },
+        });
+      }
+  
+      return res.status(200).json({
+        code: 200,
+        status: "OK",
+        message: "Success getting jobs within the date range",
+        data: {
+          jobs,
+        },
+      });
+    } catch (err) {
+      return handleError(res, err);
+    }
+  },  
 
   getById: crudController.getById(Job, { include }),
   create: crudController.create(Job),
