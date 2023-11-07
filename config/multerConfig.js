@@ -7,7 +7,7 @@ const avatarStorage = multer.diskStorage({
     cb(null, path.join(__dirname, '../src/avatar'));
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    cb(null, `${Date.now()}-${file.originalname.split (' ').join('_')}`);
   },
 });
 
@@ -17,7 +17,7 @@ const cvStorage = multer.diskStorage({
     cb(null, path.join(__dirname, '../src/cv'));
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    cb(null, `${Date.now()}-${file.originalname.split (' ').join('_')}`);
   },
 });
 

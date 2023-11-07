@@ -1,3 +1,9 @@
+require("dotenv").config();
+
+const {
+  BE_PORT
+} = process.env;
+
 const {
   User
 } = require("../db/models");
@@ -81,6 +87,51 @@ module.exports = {
     )(req, res);
   },
 
+  // Updated uploadAvatar function with Multer middleware
+  uploadAvatar: async (req, res) => {
+    try {
+      // Check if a file was uploaded (Multer middleware adds 'file' to the request)
+      if (!req.file) {
+        return res.status(400).json({
+          code: 400,
+          status: 'Bad Request',
+          message: 'No file uploaded.',
+        });
+      }
+
+      const { id } = req.user;
+
+      // Update the user's avatar path in the database
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        return res.status(404).json({
+          code: 404,
+          status: 'Not Found',
+          message: 'User not found',
+        });
+      }
+
+      // Remove the previous avatar file if it exists
+      if (user.avatar) {
+        const avatarPath = path.join(__dirname, `../src/avatar/${user.avatar}`);
+        fs.unlinkSync(avatarPath);
+      }
+
+      user.avatar = req.file.filename; // Store the new avatar filename in the 'avatar' field
+      await user.save();
+
+      return res.status(200).json({
+        code: 200,
+        status: 'OK',
+        message: 'Profile picture uploaded successfully.',
+        avatarPath: user.avatar,
+      });
+    } catch (err) {
+      return handleError(res, err);
+    }
+  },
+
   // Get a user's avatar by token
   getAvatar: async (req, res) => {
     try {
@@ -122,44 +173,48 @@ module.exports = {
     }
   },
 
-  // Updated uploadAvatar function with Multer middleware and Sharp image processing
-  uploadAvatar: async (req, res) => {
+  // Updated uploadCV function with Multer middleware
+  uploadCV: async (req, res) => {
     try {
       // Check if a file was uploaded (Multer middleware adds 'file' to the request)
       if (!req.file) {
         return res.status(400).json({
           code: 400,
-          status: 'Bad Request',
-          message: 'No file uploaded.',
+          status: "Bad Request",
+          message: "No file uploaded.",
         });
       }
 
       const { id } = req.user;
-      // Update the user's avatar path in the database
-      const user = await User.findByPk(id);
 
+      // Update the user's CV field in the database with the CV link
+      const user = await User.findByPk(id);
       if (!user) {
         return res.status(404).json({
           code: 404,
-          status: 'Not Found',
-          message: 'User not found',
+          status: "Not Found",
+          message: "User not found",
         });
       }
 
-      // Remove the previous avatar file if it exists
-      if (user.avatar) {
-        const avatarPath = path.join(__dirname, `../src/avatar/${user.avatar}`);
-        fs.unlinkSync(avatarPath);
+      // Remove the previous CV file if it exists
+      if (user.cv) {
+        const cvPath = path.join(__dirname, `../src/cv/${user.cv}`);
+        fs.unlinkSync(cvPath);
       }
 
-      user.avatar = req.file.filename; // Store the new avatar filename in the 'avatar' field
+      // // Store the new CV link in the 'cv' field
+      // user.cv = `https://${BE_PORT}/src/cv/${req.file.filename}`;
+      user.cv = req.file.filename; // Store the new CV filename in the 'cv' field
+
       await user.save();
 
       return res.status(200).json({
         code: 200,
-        status: 'OK',
-        message: 'Profile picture uploaded successfully.',
-        avatarPath: user.avatar,
+        status: "OK",
+        message: "CV uploaded successfully.",
+        cvPath: user.cv, // Return the CV link in the response
+        cvLink: `https://${BE_PORT}/src/cv/${user.cv}`,
       });
     } catch (err) {
       return handleError(res, err);
@@ -171,7 +226,7 @@ module.exports = {
     try {
       const { id } = req.user;
       // Find the user by ID
-      const user = await User.findByPk(id, { attributes: ["cv"] });
+      const user = await User.findByPk(id, { attributes: ["id", "name", "cv"] });
 
       if (!user) {
         return res.status(404).json({
@@ -193,8 +248,12 @@ module.exports = {
 
       // Check if the CV file exists
       if (fs.existsSync(cvPath)) {
-        // Send the CV file as a response
-        res.sendFile(cvPath);
+        // Return the specified response format
+        return res.status(200).json({
+          id: user.id,
+          name: user.name,
+          cv: `https://${BE_PORT}/src/cv/${user.cv}`,
+        });
       } else {
         return res.status(404).json({
           code: 404,
@@ -202,50 +261,6 @@ module.exports = {
           message: "User's CV not found",
         });
       }
-    } catch (err) {
-      return handleError(res, err);
-    }
-  },
-
-  // Updated uploadCV function with Multer middleware
-  uploadCV: async (req, res) => {
-    try {
-      // Check if a file was uploaded (Multer middleware adds 'file' to the request)
-      if (!req.file) {
-        return res.status(400).json({
-          code: 400,
-          status: "Bad Request",
-          message: "No file uploaded.",
-        });
-      }
-
-      const { id } = req.user;
-
-      // Update the user's CV path in the database
-      const user = await User.findByPk(id);
-      if (!user) {
-        return res.status(404).json({
-          code: 404,
-          status: "Not Found",
-          message: "User not found",
-        });
-      }
-
-      // Remove the previous CV file if it exists
-      if (user.cv) {
-        const cvPath = path.join(__dirname, `../src/cv/${user.cv}`);
-        fs.unlinkSync(cvPath);
-      }
-
-      user.cv = req.file.filename; // Store the new CV filename in the 'cv' field
-      await user.save();
-
-      return res.status(200).json({
-        code: 200,
-        status: "OK",
-        message: "CV uploaded successfully.",
-        cvPath: user.cv,
-      });
     } catch (err) {
       return handleError(res, err);
     }

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const { uploadAvatar, uploadCV } = require('../config/multerConfig');
-const {adminToken, verifiedToken} = require('../middleware/auth');
+const { adminToken, verifiedToken } = require('../middleware/auth');
 const applicationController = require("../controllers/applicationController");
 
 // Routes for user-related actions
@@ -21,13 +21,15 @@ router.get("/application/:id", adminToken, applicationController.getByUserId);
 // Route to get applications
 router.get("/application/", applicationController.getByUserId);
 
-// Routes for uploading avatar
-router.post('/avatar', uploadAvatar.single('avatar'), userController.uploadAvatar);
+// Route to upload avatar
+router.post('/avatar', verifiedToken, uploadAvatar.single('avatar'), userController.uploadAvatar);
+
 // Route to get a user's avatar by token
 router.get('/avatar', verifiedToken, userController.getAvatar);
 
-// Routes for uploading CV
-router.post('/cv', uploadCV.single('cv'), userController.uploadCV);
+// Route to upload CV
+router.post('/cv', verifiedToken, uploadCV.single('cv'), userController.uploadCV);
+
 // Route to get a user's CV by token
 router.get('/cv', verifiedToken, userController.getCV);
 
