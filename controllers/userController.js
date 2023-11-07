@@ -1,9 +1,5 @@
 const {
-  User,
-  // Job,
-  // Position,
-  // Experience,
-  // Application,
+  User
 } = require("../db/models");
 const bcrypt = require("bcrypt");
 const path = require("path");
@@ -126,27 +122,27 @@ module.exports = {
     }
   },
 
-  // Updated uploadAvatar function with Multer middleware
+  // Updated uploadAvatar function with Multer middleware and Sharp image processing
   uploadAvatar: async (req, res) => {
     try {
       // Check if a file was uploaded (Multer middleware adds 'file' to the request)
       if (!req.file) {
         return res.status(400).json({
           code: 400,
-          status: "Bad Request",
-          message: "No file uploaded.",
+          status: 'Bad Request',
+          message: 'No file uploaded.',
         });
       }
 
       const { id } = req.user;
-
       // Update the user's avatar path in the database
       const user = await User.findByPk(id);
+
       if (!user) {
         return res.status(404).json({
           code: 404,
-          status: "Not Found",
-          message: "User not found",
+          status: 'Not Found',
+          message: 'User not found',
         });
       }
 
@@ -161,8 +157,8 @@ module.exports = {
 
       return res.status(200).json({
         code: 200,
-        status: "OK",
-        message: "Profile picture uploaded successfully.",
+        status: 'OK',
+        message: 'Profile picture uploaded successfully.',
         avatarPath: user.avatar,
       });
     } catch (err) {
