@@ -152,6 +152,71 @@ module.exports = {
       return handleError(res, err);
     }
   },
+
+  getApplicationsByMonthAndYear: async (req, res) => {
+    try {
+      const { month, year, page, limit } = req.query;
+
+      // Validate month and year
+      if (!month || !year) {
+        return res.status(400).json({
+          code: 400,
+          status: "Bad Request",
+          message: "Please provide valid month and year parameters.",
+        });
+      }
+
+      // Parse the month and year as Date objects
+      const monthObj = new Date(`${year}-${month}`);
+      const startDate = new Date(monthObj.getFullYear(), monthObj.getMonth(), 1);
+      const endDate = new Date(monthObj.getFullYear(), monthObj.getMonth() + 1, 0);
+
+      // Calculate limit and offset for pagination
+      const parsedLimit = parseInt(limit) || defaultPageLimit;
+      const parsedPage = parseInt(page) || 1;
+      const offset = (parsedPage - 1) * parsedLimit;
+
+      // Fetch applications based on the month and year with pagination
+      const applications = await Application.findAndCountAll({
+        where: {
+          createdAt: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
+        include, // Include User and Job models as needed
+        limit: parsedLimit,
+        offset,
+      });
+
+      const totalRows = applications.count;
+      const applicationList = applications.rows;
+
+      if (applicationList.length === 0) {
+        return res.status(200).json({
+          code: 200,
+          status: "OK",
+          message: "No applications found within the specified month and year.",
+          data: {
+            rows: [],
+          },
+        });
+      }
+
+      return res.status(200).json({
+        code: 200,
+        status: "OK",
+        message: "Success getting applications within the month and year with pagination",
+        data: {
+          rows: applicationList,
+          totalRows,
+          totalPages: Math.ceil(totalRows / parsedLimit),
+          currentPage: parsedPage,
+        },
+      });
+    } catch (err) {
+      return handleError(res, err);
+    }
+  },
     
   // Get applications by user's token
   getApplicationsByUserToken: async (req, res) => {

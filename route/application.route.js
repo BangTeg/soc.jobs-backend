@@ -21,4 +21,7 @@ router.delete("/:id", adminToken, applicationController.delete);
 // Route to get applications by createdAt date range
 router.get("/filter/date-range", adminToken, applicationController.getApplicationsByDateRange);
 
+// Route to get applications by month and year
+router.get("/filter/month-year", adminToken, applicationController.getApplicationsByMonthAndYear);
+
 module.exports = router;
