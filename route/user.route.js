@@ -33,4 +33,7 @@ router.post('/cv', verifiedToken, uploadCV.single('cv'), userController.uploadCV
 // Route to get a user's CV by token
 router.get('/cv', verifiedToken, userController.getCV);
 
+// Route to get a user's CV by id
+router.get('/cv/:id', adminToken, userController.getCVById);
+
 module.exports = router;

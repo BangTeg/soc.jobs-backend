@@ -266,6 +266,51 @@ module.exports = {
     }
   },
 
+  // Admin get a user's CV by ID
+  getCVById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      // Find the user by ID
+      const user = await User.findByPk(id, { attributes: ["id", "name", "cv"] });
+
+      if (!user) {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User not found",
+        });
+      }
+
+      if (!user.cv) {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User's CV not found",
+        });
+      }
+
+      const cvPath = path.join(__dirname, `../src/cv/${user.cv}`);
+
+      // Check if the CV file exists
+      if (fs.existsSync(cvPath)) {
+        // Return the specified response format
+        return res.status(200).json({
+          id: user.id,
+          name: user.name,
+          cv: `https://${BE_PORT}/src/cv/${user.cv}`,
+        });
+      } else {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User's CV not found",
+        });
+      }
+    } catch (err) {
+      return handleError(res, err);
+    }
+  },
+
   // getProfile: async (req, res) => {
   //   try {
   //     const profile = await User.findOne({
