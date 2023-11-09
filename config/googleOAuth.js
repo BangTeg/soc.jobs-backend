@@ -2,7 +2,8 @@
 require('dotenv').config();
 const {
     GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET
+    GOOGLE_CLIENT_SECRET,
+    BE_PORT
 } = process.env;
 
 // config/googleOAuth.js
@@ -12,7 +13,7 @@ const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 passport.use(new GoogleStrategy({
   clientID: GOOGLE_CLIENT_ID,
   clientSecret: GOOGLE_CLIENT_SECRET,
-  callbackURL: 'https://50cglb1j-4000.asse.devtunnels.ms/auth/google/', // This will be the route that Google will redirect to after authentication
+  callbackURL: `https://${BE_PORT}/auth/google/callback`,
   passReqToCallback: true
 },
 (request, accessToken, refreshToken, profile, done) => {
