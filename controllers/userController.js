@@ -213,7 +213,7 @@ module.exports = {
         code: 200,
         status: "OK",
         message: "CV uploaded successfully.",
-        cvPath: user.cv, // Return the CV link in the response
+        cvPath: user.cv, 
         cvLink: `https://${BE_PORT}/src/cv/${user.cv}`,
       });
     } catch (err) {

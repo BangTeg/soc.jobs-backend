@@ -18,9 +18,9 @@ const {
 // Define default email options.
 const mailOptions = {
   from: SMTP_USERNAME, // Sender's email address.
-  // to: "@gmail.com", // Recipient's email address (commented out, should be defined when used).
+  // to: "@gmail.com", // Recipient's email address.
   subjectPrefix: "SOC JOBS ", // Prefix for email subjects.
-  // text: `link verifikasi - `, // Text for email content (commented out, should be defined when used).
+  // text: `link verifikasi - `, // Text for email content.
 };
 
 // Export the configuration for the emailer, including constants, SMTP settings, and email options.

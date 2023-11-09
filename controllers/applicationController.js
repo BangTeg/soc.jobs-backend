@@ -298,13 +298,13 @@ module.exports = {
             emailMessage = ejs.render(applicationEmailTemplate, {
               name: user.name,
               jobTitle: ret.data.Job.title,
-              status: "belum dapat kami terima",
+              status: "REJECTED",
             });
           } else if (status === "Accepted") {
             emailMessage = ejs.render(applicationEmailTemplate, {
               name: user.name,
               jobTitle: ret.data.Job.title,
-              status: "lolos tahap selanjutnya",
+              status: "ACCEPTED",
             });
           }
           const emailerResult = await sendEmail({

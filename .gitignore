@@ -7,8 +7,5 @@ package-lock.json
 # dotenv environment variables file
 .env
 
-# source files
-src
-
 # vscode Local History extension
 .history

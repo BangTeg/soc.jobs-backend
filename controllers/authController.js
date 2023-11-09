@@ -114,7 +114,15 @@ module.exports = {
       }
 
       const token = generateAuthToken(user);
-      return res.json({ message: "Login success", token, name: user.name });
+      return res.json({
+        message: "Login success",
+        token,
+        name: user.name,
+        role: user.role,
+        gender: user.gender,
+        address: user.address,
+        contact: user.contact
+      });
     } catch (error) {
       return handleError(res, error);
     }
