@@ -1,0 +1,27 @@
+# DATABASE
+DB_USERNAME = root
+DB_DATABASE = socjobs_db
+DB_HOST = host
+DB_PORT = port
+DB_PASSWORD = password
+
+# GOOGLE OAUTH
+GOOGLE_CLIENT_ID = your google client id
+GOOGLE_CLIENT_SECRET = your google client secret
+callbackURL = http://localhost:3000/auth/google/callback
+
+# HOST
+PORT = 4000
+FE_PORT = your frontend port
+BE_PORT = your backend port
+
+# JWT
+JWT_SECRET = secrets
+JWT_EXPIRY = 86400
+
+# EMAIL
+SMTP_HOST = smtp.gmail.com
+SMTP_PORT = 465
+SMTP_USERNAME = your email
+SMTP_PASSWORD = your app password 
+SMTP_SECURE = true
