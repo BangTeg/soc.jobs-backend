@@ -26,7 +26,7 @@ router.post("/reset/:token", authController.resetPassword);
 router.post("/verify/:token", authController.verifyEmail);
 // Google authentication routes
 router.get('/google', googleAuthController.googleLogin);
-router.get('/google/callback', googleAuthController.googleCallback);
+// router.get('/google/callback', googleAuthController.googleCallback);
 router.get('/google/protected', googleAuthController.googleProtected);
 router.get('/google/success/:token', googleAuthController.googleSuccess);
 router.get('/google/failure', googleAuthController.googleFailure);

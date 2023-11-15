@@ -5,7 +5,8 @@ const {
 } = process.env;
 
 const {
-  User
+  User,
+  Application
 } = require("../db/models");
 const bcrypt = require("bcrypt");
 const path = require("path");
@@ -310,6 +311,52 @@ module.exports = {
       return handleError(res, err);
     }
   },
+
+  // Delete a user's and applications by ID
+  delete: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        return res.status(404).json({
+          code: 404,
+          status: "Not Found",
+          message: "User not found",
+        });
+      }
+
+      // Remove the user's avatar file if it exists
+      if (user.avatar) {
+        const avatarPath = path.join(__dirname, `../src/avatar/${user.avatar}`);
+        fs.unlinkSync(avatarPath);
+      }
+
+      // Remove the user's CV file if it exists
+      if (user.cv) {
+        const cvPath = path.join(__dirname, `../src/cv/${user.cv}`);
+        fs.unlinkSync(cvPath);
+      }
+
+      // Remove the user's applications
+      await Application.destroy({ where: { UserId: id } });
+
+      // Remove the user
+      await user.destroy();
+
+      return res.status(200).json({
+        code: 200,
+        status: "OK",
+        message: "User's data deleted successfully.",
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        email: user.email,
+      });
+    } catch (err) {
+      return handleError(res, err);
+    }
+  }
 
   // getProfile: async (req, res) => {
   //   try {

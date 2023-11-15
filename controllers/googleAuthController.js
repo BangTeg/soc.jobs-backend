@@ -1,10 +1,12 @@
+require('dotenv').config();
+
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const { User } = require('../db/models');
 const { handleError } = require('../utils/errorHandler');
 
 // Function to generate JWT token
-// TODO : move functionto auth middleware
+// TODO : move functiont auth middleware
 const generateAuthToken = (user) => {
   const { id, name, email, role } = user;
   // console.log(user);
@@ -12,9 +14,9 @@ const generateAuthToken = (user) => {
     expiresIn: "1d", // TODO : move to config
   });
 };
-module.exports = {
 
-  // Login with Google
+module.exports = {
+  // Endpoint google login
   googleLogin: passport.authenticate('google', {
     scope: ['profile', 'email'],
     successRedirect: '/auth/google/protected',
@@ -37,7 +39,13 @@ module.exports = {
       });
       console.log(isCreated);
       const token = generateAuthToken(user);
-      return res.redirect(`/auth/google/success/${token}`);
+      // return res.redirect(`/auth/google/success/${token}`);
+
+      return res.json({
+        message: 'Login success',
+        token,
+      });
+      
     } catch (error) {
       return handleError(res, error); // Handle errors using the handleError function
     }
@@ -47,7 +55,7 @@ module.exports = {
   googleSuccess: (req, res) => {
     res.send({
       message: "Login success",
-      token: req.params.token,
+      token: req.params.token
     });
   },
 
@@ -63,25 +71,25 @@ module.exports = {
 
   // Callback route for Google to redirect to after authentication
   // UNUSED
-  googleCallback: (req, res) => {
-    console.log('callback')
-    passport.authenticate('google', async (err, user, info) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send('Internal Server Error');
-      }
+  // googleCallback: (req, res) => {
+  //   console.log('callback')
+  //   passport.authenticate('google', async (err, user, info) => {
+  //     if (err) {
+  //       console.error(err);
+  //       return res.status(500).send('Internal Server Error');
+  //     }
 
-      if (!user) {
-        return res.status(401).send('Google authentication failed');
-      }
+  //     if (!user) {
+  //       return res.status(401).send('Google authentication failed');
+  //     }
 
-      // If user is authenticated, generate a JWT token
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: '1d', // TODO : move to config
-      });
+  //     // If user is authenticated, generate a JWT token
+  //     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+  //       expiresIn: '1d', // TODO : move to config
+  //     });
 
-      // Redirect to a success page with the token
-      return res.redirect(`/auth/google/success/${token}`);
-    })(req, res);
-  },
+  //     // Redirect to a success page with the token
+  //     return res.redirect(`/auth/google/success/${token}`);
+  //   })(req, res);
+  // },
 };

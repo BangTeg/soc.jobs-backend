@@ -36,4 +36,7 @@ router.get('/cv', verifiedToken, userController.getCV);
 // Route to get a user's CV by id
 router.get('/cv/:id', adminToken, userController.getCVById);
 
+// Route to delete a user's and applications by id
+router.delete('/:id', adminToken, userController.delete);
+
 module.exports = router;
