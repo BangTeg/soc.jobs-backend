@@ -41,6 +41,7 @@ const crudController = {
           attributes,
           raw,
           nest,
+          order: [["createdAt", "DESC"]], // Order by createdAt in descending order
           ...pageOptions,
         });
 
